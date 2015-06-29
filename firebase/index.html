@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DASH</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap -->
+    <link href="bootstrap-3.3.5-dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style type="text/css">
+    html {
+      position: relative;
+      min-height: 100%;
+    }
+    body {
+        padding-top:20px;
+    }
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      /* Set the fixed height of the footer here */
+      height: 60px;
+      background-color: #f5f5f5;
+    }
+    .container .muted {
+      margin: 20px 0;
+    }
+    .jumbotron h1{
+      color: #1e73be;
+    }
+    .jumbotron {
+      padding-left: 30px;
+    }
+    </style>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-64485063-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+  </head>
+  <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="jumbotron">
+                        <h1 id="difficulty">0</h1>
+                        <p>DASH difficulty </p>
+                        
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="jumbotron">
+                        <h1 id="hashrate">0</h1>
+                        <p>GH/s of hashing power</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="jumbotron">
+                        <h1 id="lastblock">0</h1>
+                        <p>last block found</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="jumbotron">
+                        <h1 id="priceBTC">0</h1>
+                        <p>BTC for one DASH </p>
+                        
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="jumbotron">
+                        <h1 id="price">$0</h1>
+                        <p>for one DASH</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                   <div class="jumbotron">
+                        <h1 id="availablesupply">0</h1>
+                        <p>available DASH</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="jumbotron">
+                        <h1>DASH</h1>
+                        <p>&nbsp;</p>
+                    </div>
+                </div>
+               <div class="col-md-4">
+                    <div class="jumbotron">
+                        <h1 id="masternodecount">0</h1>
+                        <p>masternodes on the network</p>
+                        
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="jumbotron">
+                        <h1 id="enforcement">On</h1>
+                        <p>payment enforcement status</p>
+                    </div> 
+                </div>
+            </div>
+        </div>
+    <footer class="footer">
+        <div class="container">
+            <p class="muted" id="lastupdate"></p>
+        </div>
+    </footer>
+    <script src="firebase.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+    <script>
+        var _timestamp;
+        var databaseUrl = "https://mjsrs.firebaseio.com/";
+        var ref = new Firebase(databaseUrl);
+        ref.on("value", function(snapshot) {
+          $("h1[id=masternodecount]").html(snapshot.val().masternodecount);
+          _timestamp = new Date(snapshot.val().timestamp);
+          var timestamp_time_since = moment(_timestamp).fromNow();
+          $("p[id=lastupdate]").html("this board was updated "+timestamp_time_since);
+          $("h1[id=hashrate]").html(snapshot.val().hashrate);
+          $("h1[id=lastblock]").html(snapshot.val().lastblock);
+          $("h1[id=price]").html(snapshot.val().price);
+          $("h1[id=priceBTC]").html(snapshot.val().priceBTC);
+          $("h1[id=enforcement]").html(snapshot.val().enforcement);
+          $("h1[id=difficulty]").html(snapshot.val().difficulty);
+          $("h1[id=availablesupply]").html(snapshot.val().availablesupply);
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+        setInterval(function(){
+          console.log(_timestamp);
+          var timestamp_time_since = moment(_timestamp).fromNow();
+          $("p[id=lastupdate]").html("this board was updated "+timestamp_time_since);
+        }, 10000);
+    </script>
+
+
+  </body>
+</html>
