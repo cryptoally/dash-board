@@ -43,7 +43,7 @@ def main():
             message = "*** ERROR: key \'%s\' is required" % key
             raise Exception(message)
 
-    a = firebase.FirebaseAuthentication(appconfig['firebase']['token'], "mjsrs@sapo.pt")
+    a = firebase.FirebaseAuthentication(appconfig['firebase']['token'], appconfig['firebase']['email'])
     f = firebase.FirebaseApplication(appconfig['firebase']['url'], a)
 
     #run dash-cli getmininginfo
