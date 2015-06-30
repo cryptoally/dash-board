@@ -122,6 +122,7 @@ def main():
     BTCUSD = reduce(lambda x, y: x+y, avg_price_btcusd)/len(avg_price_btcusd)
     print avg_price_btcusd
     print "AVG BTCUSD: %s" % round(BTCUSD, 8)
+    f.put("", "priceBTCUSD", "$%s" % round(BTCUSD, 2))
     DASHUSD = "$%s" % round(float(BTCUSD * DASHBTC), 2)
     print "DASHUSD: %s" % DASHUSD
     f.put("", "price", DASHUSD)
@@ -130,10 +131,16 @@ def main():
     try:
         r = requests.get("http://chainz.cryptoid.info/dash/api.dws?q=totalcoins")
         int_total_coins = r.text.split(".")[0]
-        inv_total_coins = int_total_coins[::-1]
-        availablesupply = ",".join(chunks(inv_total_coins, 3))[::-1]
-        print "Available supply: %s" % availablesupply
-        f.put("", "availablesupply", availablesupply)
+        try:
+            #validate request
+            int(int_total_coins)
+            inv_total_coins = int_total_coins[::-1]
+            availablesupply = ",".join(chunks(inv_total_coins, 3))[::-1]
+            print "Available supply: %s" % availablesupply
+            f.put("", "availablesupply", availablesupply)
+        except ValueError:
+            #reply is not an integer
+            print "chainz reply is not valid"
     except requests.exceptions.RequestException as e:
         print e
 

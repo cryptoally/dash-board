@@ -80,24 +80,24 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                   <div class="jumbotron">
-                        <h1 id="availablesupply">0</h1>
-                        <p>available DASH</p>
+                    <div class="jumbotron">
+                        <h1 id="priceBTCUSD">0</h1>
+                        <p>for one BTC</p>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4">
-                    <div class="jumbotron">
-                        <h1>DASH</h1>
-                        <p>&nbsp;</p>
-                    </div>
-                </div>
+
                <div class="col-md-4">
                     <div class="jumbotron">
                         <h1 id="masternodecount">0</h1>
                         <p>masternodes on the network</p>
-                        
+                    </div>
+                </div>
+                <div class="col-md-4">
+                   <div class="jumbotron">
+                        <h1 id="availablesupply">0</h1>
+                        <p>available DASH</p>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -130,6 +130,7 @@
           $("h1[id=lastblock]").html(snapshot.val().lastblock);
           $("h1[id=price]").html(snapshot.val().price);
           $("h1[id=priceBTC]").html(snapshot.val().priceBTC);
+          $("h1[id=priceBTCUSD]").html(snapshot.val().priceBTCUSD);
           $("h1[id=enforcement]").html(snapshot.val().enforcement);
           $("h1[id=difficulty]").html(snapshot.val().difficulty);
           $("h1[id=availablesupply]").html(snapshot.val().availablesupply);
