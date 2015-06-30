@@ -5,7 +5,7 @@ import datetime
 import requests
 import config
 
-CONFIG_FILE_PATH = "/root/firebase/init/config.ini"
+CONFIG_FILE_PATH = "/root/firebase/config.ini"
 
 
 def chunks(s, n):
@@ -13,44 +13,21 @@ def chunks(s, n):
         yield s[start:start+n]
 
 
-def get_price_cryptsy(request, market):
-    try:
-        v = float(request["return"]["markets"][market]["lasttradeprice"])
-        return v
-    except KeyError:
+def get_price(request, exchange, market):
+    exchanges = {
+        'cryptsy': ['return', 'markets', market, 'lasttradeprice'],
+        'bittrex': ['result', 'Last'],
+        'bitfinex': ['last_price'],
+        'btce': [market, 'last'],
+        'bitstamp': ['last']
+    }
+    val = request
+    if exchange in exchanges:
+        for i in exchanges[exchange]:
+            val = val.get(i, {})
+    if val == {}:
         return None
-
-
-def get_price_bittrex(request, market):
-    try:
-        v = float(request["result"]["Last"])
-        return v
-    except KeyError:
-        return None
-
-
-def get_price_bitfinex(request, market):
-    try:
-        v = float(request["last_price"])
-        return v
-    except KeyError:
-        return None
-
-
-def get_price_btce(request, market):
-    try:
-        v = float(request[market]["last"])
-        return v
-    except KeyError:
-        return None
-
-
-def get_price_bitstamp(request, market):
-    try:
-        v = float(request["last"])
-        return v
-    except KeyError:
-        return None
+    return float(val)
 
 
 def main():
@@ -106,9 +83,9 @@ def main():
 
     #get average DASH-BTC from cryptsy, bittrex and bitfinex
     DashBtc = {
-        'cryptsy': {'url': 'http://pubapi2.cryptsy.com/api.php?method=singlemarketdata&marketid=155', 'fn_price': get_price_cryptsy, 'marketSymbol': 'DRK'},
-        'bittrex':  {'url': 'https://bittrex.com/api/v1.1/public/getticker?market=btc-dash', 'fn_price': get_price_bittrex, 'marketSymbol': 'DRK'},
-        'bitfinex': {'url':  'https://api.bitfinex.com/v1/pubticker/DRKBTC', 'fn_price': get_price_bitfinex, 'marketSymbol': 'DRK'}
+        'cryptsy': {'url': 'http://pubapi2.cryptsy.com/api.php?method=singlemarketdata&marketid=155', 'fn_price': get_price, 'exchange': 'cryptsy', 'market': 'DRK'},
+        'bittrex':  {'url': 'https://bittrex.com/api/v1.1/public/getticker?market=btc-dash', 'fn_price': get_price, 'exchange': 'bittrex', 'market': 'DRK'},
+        'bitfinex': {'url':  'https://api.bitfinex.com/v1/pubticker/DRKBTC', 'fn_price': get_price, 'exchange': 'bitfinex', 'market': 'DRK'}
         }
 
     avg_price_dashbtc = []
@@ -116,12 +93,12 @@ def main():
         try:
             r = requests.get(value['url'])
             output = json.loads(r.text)
-            price = value['fn_price'](output, value['marketSymbol'])
+            price = value['fn_price'](output, value['exchange'], value['market'])
             if price is not None:
                 avg_price_dashbtc.append(price)
         except requests.exceptions.RequestException as e:
             print e
-
+    print "avg_price_dashbtc: %s" % avg_price_dashbtc
     DASHBTC = reduce(lambda x, y: x+y, avg_price_dashbtc)/len(avg_price_dashbtc)
     print avg_price_dashbtc
     print "AVG DASHBTC: %s" % round(DASHBTC, 8)
@@ -129,16 +106,16 @@ def main():
 
     #get average BTC-USD from btce, bitstamp, bitfinex
     BtcUsd = {
-        'btce': {'url': 'https://btc-e.com/api/3/ticker/btc_usd', 'fn_price': get_price_btce, 'marketSymbol': 'btc_usd'},
-        'bitstamp': {'url': 'https://www.bitstamp.net/api/ticker/', 'fn_price': get_price_bitstamp, 'marketSymbol': 'BTCUSD'},
-        'bitfinex': {'url': 'https://api.bitfinex.com/v1/pubticker/BTCUSD', 'fn_price': get_price_bitfinex, 'marketSymbol': 'BTCUSD'},
+        'btce': {'url': 'https://btc-e.com/api/3/ticker/btc_usd', 'fn_price': get_price, 'exchange': 'btce', 'market': 'btc_usd'},
+        'bitstamp': {'url': 'https://www.bitstamp.net/api/ticker/', 'fn_price': get_price, 'exchange': 'bitstamp', 'market': 'BTCUSD'},
+        'bitfinex': {'url': 'https://api.bitfinex.com/v1/pubticker/BTCUSD', 'fn_price': get_price, 'exchange': 'bitfinex', 'market': 'BTCUSD'},
     }
     avg_price_btcusd = []
     for key, value in BtcUsd.iteritems():
         try:
             r = requests.get(value['url'])
             output = json.loads(r.text)
-            price = value['fn_price'](output, value['marketSymbol'])
+            price = value['fn_price'](output, value['exchange'], value['market'])
             if price is not None:
                 avg_price_btcusd.append(price)
         except requests.exceptions.RequestException as e:
