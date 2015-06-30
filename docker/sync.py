@@ -54,7 +54,7 @@ def main():
 
     #run dash-cli masternode count
     masternodecount = subprocess.check_output(["dash-cli", "masternode", "count"])
-    print "masternode: %s" % masternodecount
+    print "masternodecount: %s" % masternodecount
 
     #update firebase values
     f.put("", "masternodecount", masternodecount)
@@ -78,8 +78,6 @@ def main():
 
     #update firebase values
     f.put("", "enforcement", payment_enforcement)
-    #timestamp is given by firebase server
-    f.put("", "timestamp", {".sv": "timestamp"})
 
     #get average DASH-BTC from cryptsy, bittrex and bitfinex
     DashBtc = {
@@ -138,6 +136,9 @@ def main():
         f.put("", "availablesupply", availablesupply)
     except requests.exceptions.RequestException as e:
         print e
+
+    #timestamp is given by firebase server
+    f.put("", "timestamp", {".sv": "timestamp"})
 
 
 if __name__ == "__main__":
