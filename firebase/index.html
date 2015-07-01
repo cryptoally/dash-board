@@ -110,7 +110,8 @@
         </div>
     <footer class="footer">
         <div class="container">
-            <p class="muted" id="lastupdate"></p>
+            <div class="muted" id="lastupdate" style="float:left"></div>
+            <div class="muted" style="float:right"><a href="https://github.com/mjsrs/dash-board" target="_blank">GitHub</a></div>
         </div>
     </footer>
     <script src="firebase.js"></script>
@@ -125,7 +126,7 @@
           $("h1[id=masternodecount]").html(snapshot.val().masternodecount);
           _timestamp = new Date(snapshot.val().timestamp);
           var timestamp_time_since = moment(_timestamp).fromNow();
-          $("p[id=lastupdate]").html("this board was updated "+timestamp_time_since);
+          $("div[id=lastupdate]").html("this board was updated "+timestamp_time_since);
           $("h1[id=hashrate]").html(snapshot.val().hashrate);
           $("h1[id=lastblock]").html(snapshot.val().lastblock);
           $("h1[id=price]").html(snapshot.val().price);
@@ -140,7 +141,7 @@
         setInterval(function(){
           console.log(_timestamp);
           var timestamp_time_since = moment(_timestamp).fromNow();
-          $("p[id=lastupdate]").html("this board was updated "+timestamp_time_since);
+          $("div[id=lastupdate]").html("this board was updated "+timestamp_time_since);
         }, 10000);
     </script>
 
