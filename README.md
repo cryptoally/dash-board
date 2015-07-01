@@ -20,5 +20,8 @@ Refer to the code for more information.
   * Fill init/config.ini with your information and copy it to the root directory.
   * Call sync.py periodically.
 
+## Demo
+
+[Demo](https://mjsrs.firebaseapp.com)
 
 DASH: XtXT8gqpkkkGgtsSY8T7m58jQR3gmHeeZe

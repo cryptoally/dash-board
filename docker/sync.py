@@ -25,9 +25,12 @@ def get_price(request, exchange, market):
     if exchange in exchanges:
         for i in exchanges[exchange]:
             val = val.get(i, {})
-    if val == {}:
-        return None
-    return float(val)
+        try:
+            output = float(val)
+            return output
+        except Exception as e:
+            print e
+    return None
 
 
 def main():
@@ -97,10 +100,11 @@ def main():
         except requests.exceptions.RequestException as e:
             print e
     print "avg_price_dashbtc: %s" % avg_price_dashbtc
-    DASHBTC = reduce(lambda x, y: x+y, avg_price_dashbtc)/len(avg_price_dashbtc)
-    print avg_price_dashbtc
-    print "AVG DASHBTC: %s" % round(DASHBTC, 8)
-    f.put("", "priceBTC", round(DASHBTC, 8))
+    if len(avg_price_dashbtc) > 0:
+        DASHBTC = reduce(lambda x, y: x+y, avg_price_dashbtc)/len(avg_price_dashbtc)
+        print avg_price_dashbtc
+        print "AVG DASHBTC: %s" % round(DASHBTC, 8)
+        f.put("", "priceBTC", round(DASHBTC, 8))
 
     #get average BTC-USD from btce, bitstamp, bitfinex
     BtcUsd = {
@@ -118,14 +122,14 @@ def main():
                 avg_price_btcusd.append(price)
         except requests.exceptions.RequestException as e:
             print e
-
-    BTCUSD = reduce(lambda x, y: x+y, avg_price_btcusd)/len(avg_price_btcusd)
-    print avg_price_btcusd
-    print "AVG BTCUSD: %s" % round(BTCUSD, 8)
-    f.put("", "priceBTCUSD", "$%s" % round(BTCUSD, 2))
-    DASHUSD = "$%s" % round(float(BTCUSD * DASHBTC), 2)
-    print "DASHUSD: %s" % DASHUSD
-    f.put("", "price", DASHUSD)
+    if len(avg_price_btcusd) > 0:
+        BTCUSD = reduce(lambda x, y: x+y, avg_price_btcusd)/len(avg_price_btcusd)
+        print avg_price_btcusd
+        print "AVG BTCUSD: %s" % round(BTCUSD, 8)
+        f.put("", "priceBTCUSD", "$%s" % round(BTCUSD, 2))
+        DASHUSD = "$%s" % round(float(BTCUSD * DASHBTC), 2)
+        print "DASHUSD: %s" % DASHUSD
+        f.put("", "price", DASHUSD)
 
     #get total coins supply from Chainz
     try:
