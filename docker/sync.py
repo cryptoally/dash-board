@@ -93,18 +93,23 @@ def main():
     for key, value in DashBtc.iteritems():
         try:
             r = requests.get(value['url'])
-            output = json.loads(r.text)
-            price = value['fn_price'](output, value['exchange'], value['market'])
-            if price is not None:
-                avg_price_dashbtc.append(price)
+            try:
+                output = json.loads(r.text)
+                price = value['fn_price'](output, value['exchange'], value['market'])
+                if price is not None:
+                    avg_price_dashbtc.append(price)
+            except Exception as e:
+                print e
+                print "Could not get price from %s:%s" % (value['exchange'], value['market'])
         except requests.exceptions.RequestException as e:
             print e
+            print "Could not get price from %s:%s" % (value['exchange'], value['market'])
     print "avg_price_dashbtc: %s" % avg_price_dashbtc
     if len(avg_price_dashbtc) > 0:
         DASHBTC = reduce(lambda x, y: x+y, avg_price_dashbtc)/len(avg_price_dashbtc)
         print avg_price_dashbtc
-        print "AVG DASHBTC: %s" % round(DASHBTC, 8)
-        f.put("", "priceBTC", round(DASHBTC, 8))
+        print "AVG DASHBTC: %s" % round(DASHBTC, 5)
+        f.put("", "priceBTC", round(DASHBTC, 5))
 
     #get average BTC-USD from btce, bitstamp, bitfinex
     BtcUsd = {
@@ -116,12 +121,17 @@ def main():
     for key, value in BtcUsd.iteritems():
         try:
             r = requests.get(value['url'])
-            output = json.loads(r.text)
-            price = value['fn_price'](output, value['exchange'], value['market'])
-            if price is not None:
-                avg_price_btcusd.append(price)
+            try:
+                output = json.loads(r.text)
+                price = value['fn_price'](output, value['exchange'], value['market'])
+                if price is not None:
+                    avg_price_btcusd.append(price)
+            except Exception as e:
+                print e
+                print "Could not get price from %s:%s" % (value['exchange'], value['market'])
         except requests.exceptions.RequestException as e:
             print e
+            print "Could not get price from %s:%s" % (value['exchange'], value['market'])
     if len(avg_price_btcusd) > 0:
         BTCUSD = reduce(lambda x, y: x+y, avg_price_btcusd)/len(avg_price_btcusd)
         print avg_price_btcusd
