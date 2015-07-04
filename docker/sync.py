@@ -19,7 +19,8 @@ def get_price(request, exchange, market):
         'bittrex': ['result', 'Last'],
         'bitfinex': ['last_price'],
         'btce': [market, 'last'],
-        'bitstamp': ['last']
+        'bitstamp': ['last'],
+        'okcoin': ['ticker', 'last']
     }
     val = request
     if exchange in exchanges:
@@ -116,6 +117,7 @@ def main():
         'btce': {'url': 'https://btc-e.com/api/3/ticker/btc_usd', 'fn_price': get_price, 'exchange': 'btce', 'market': 'btc_usd'},
         'bitstamp': {'url': 'https://www.bitstamp.net/api/ticker/', 'fn_price': get_price, 'exchange': 'bitstamp', 'market': 'BTCUSD'},
         'bitfinex': {'url': 'https://api.bitfinex.com/v1/pubticker/BTCUSD', 'fn_price': get_price, 'exchange': 'bitfinex', 'market': 'BTCUSD'},
+        'okcoin': {'url': 'https://www.okcoin.com/api/v1/ticker.do?symbol=btc_usd', 'fn_price': get_price, 'exchange': 'okcoin', 'market': 'BTCUSD'},
     }
     avg_price_btcusd = []
     for key, value in BtcUsd.iteritems():
