@@ -22,6 +22,6 @@ Refer to the code for more information.
 
 ## Demo
 
-[Demo](https://mjsrs.firebaseapp.com)
+[Demo](https://dash-stats.firebaseapp.com)
 
 DASH: XtXT8gqpkkkGgtsSY8T7m58jQR3gmHeeZe

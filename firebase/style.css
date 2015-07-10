@@ -1,0 +1,51 @@
+    html {
+      position: relative;
+      min-height: 100%;
+    }
+    body {
+        padding-top:20px;
+        font-family: 'Roboto', sans-serif;
+    }
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      /* Set the fixed height of the footer here */
+      height: 60px;
+      background-color: #f5f5f5;
+    }
+    .container .muted {
+      margin: 20px 0;
+    }
+    h1{
+      color: #1e73be;
+    }
+    .jumbotron h1{
+      color: #1e73be;
+    }
+    .jumbotron {
+      padding-left: 30px;
+      margin-bottom: 20px;
+      border-radius: 15px !important;
+    }
+    .col-md-4{
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    .mask{
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top:0;
+      left:0;
+      background-color: #eee;
+      z-index:999;
+    }
+    .loading{
+      width:50%;
+      height:150px;
+      position:absolute;
+      left:50%;
+      top:50%;
+      margin:-75px 0 0 -135px;
+    }

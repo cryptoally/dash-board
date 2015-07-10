@@ -1,5 +1,5 @@
 {
-  "firebase": "mjsrs",
+  "firebase": "dash-stats",
   "public": ".",
   "ignore": [
     "firebase.json",
