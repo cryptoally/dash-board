@@ -19,7 +19,8 @@ def get_price(request, exchange, market):
         'bittrex': ['result', 'Last'],
         'bitfinex': ['last_price'],
         'btce': [market, 'last'],
-        'bitstamp': ['last']
+        'bitstamp': ['last'],
+        'okcoin': ['ticker', 'last']
     }
     val = request
     if exchange in exchanges:
@@ -93,35 +94,46 @@ def main():
     for key, value in DashBtc.iteritems():
         try:
             r = requests.get(value['url'])
-            output = json.loads(r.text)
-            price = value['fn_price'](output, value['exchange'], value['market'])
-            if price is not None:
-                avg_price_dashbtc.append(price)
+            try:
+                output = json.loads(r.text)
+                price = value['fn_price'](output, value['exchange'], value['market'])
+                if price is not None:
+                    avg_price_dashbtc.append(price)
+            except Exception as e:
+                print e
+                print "Could not get price from %s:%s" % (value['exchange'], value['market'])
         except requests.exceptions.RequestException as e:
             print e
+            print "Could not get price from %s:%s" % (value['exchange'], value['market'])
     print "avg_price_dashbtc: %s" % avg_price_dashbtc
     if len(avg_price_dashbtc) > 0:
         DASHBTC = reduce(lambda x, y: x+y, avg_price_dashbtc)/len(avg_price_dashbtc)
         print avg_price_dashbtc
-        print "AVG DASHBTC: %s" % round(DASHBTC, 8)
-        f.put("", "priceBTC", round(DASHBTC, 8))
+        print "AVG DASHBTC: %s" % round(DASHBTC, 5)
+        f.put("", "priceBTC", round(DASHBTC, 5))
 
     #get average BTC-USD from btce, bitstamp, bitfinex
     BtcUsd = {
         'btce': {'url': 'https://btc-e.com/api/3/ticker/btc_usd', 'fn_price': get_price, 'exchange': 'btce', 'market': 'btc_usd'},
         'bitstamp': {'url': 'https://www.bitstamp.net/api/ticker/', 'fn_price': get_price, 'exchange': 'bitstamp', 'market': 'BTCUSD'},
         'bitfinex': {'url': 'https://api.bitfinex.com/v1/pubticker/BTCUSD', 'fn_price': get_price, 'exchange': 'bitfinex', 'market': 'BTCUSD'},
+        'okcoin': {'url': 'https://www.okcoin.com/api/v1/ticker.do?symbol=btc_usd', 'fn_price': get_price, 'exchange': 'okcoin', 'market': 'BTCUSD'},
     }
     avg_price_btcusd = []
     for key, value in BtcUsd.iteritems():
         try:
             r = requests.get(value['url'])
-            output = json.loads(r.text)
-            price = value['fn_price'](output, value['exchange'], value['market'])
-            if price is not None:
-                avg_price_btcusd.append(price)
+            try:
+                output = json.loads(r.text)
+                price = value['fn_price'](output, value['exchange'], value['market'])
+                if price is not None:
+                    avg_price_btcusd.append(price)
+            except Exception as e:
+                print e
+                print "Could not get price from %s:%s" % (value['exchange'], value['market'])
         except requests.exceptions.RequestException as e:
             print e
+            print "Could not get price from %s:%s" % (value['exchange'], value['market'])
     if len(avg_price_btcusd) > 0:
         BTCUSD = reduce(lambda x, y: x+y, avg_price_btcusd)/len(avg_price_btcusd)
         print avg_price_btcusd
