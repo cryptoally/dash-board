@@ -47,8 +47,8 @@ def main():
             message = "*** ERROR: key \'%s\' is required" % key
             raise Exception(message)
 
-    a = firebase.FirebaseAuthentication(appconfig['firebase']['token'], appconfig['firebase']['email'])
-    f = firebase.FirebaseApplication(appconfig['firebase']['url'], a)
+    dashstats_auth = firebase.FirebaseAuthentication(appconfig['firebase']['token'], appconfig['firebase']['email'])
+    dashstats = firebase.FirebaseApplication(appconfig['firebase']['url'], dashstats_auth)
 
     #run dash-cli getmininginfo
     #dashd should already been started
@@ -61,11 +61,7 @@ def main():
     print "masternodecount: %s" % masternodecount
 
     #update firebase values
-    f.put("", "masternodecount", masternodecount)
-    f.put("", "lastblock", getmininginfo["blocks"])
-    f.put("", "difficulty", round(getmininginfo["difficulty"], 2))
     hashrate = round(float(getmininginfo["networkhashps"])/1000000000, 2)
-    f.put("", "hashrate", hashrate)
 
     #run dash-cli spork show
     spork = subprocess.check_output(["dash-cli", "spork", "show"])
@@ -79,9 +75,6 @@ def main():
     #check if masternode payments enforcement is enabled
     if int(spork["SPORK_1_MASTERNODE_PAYMENTS_ENFORCEMENT"]) > int(unix_time_now):
         payment_enforcement = "Off"
-
-    #update firebase values
-    f.put("", "enforcement", payment_enforcement)
 
     #get average DASH-BTC from cryptsy, bittrex and bitfinex
     DashBtc = {
@@ -110,7 +103,6 @@ def main():
         DASHBTC = reduce(lambda x, y: x+y, avg_price_dashbtc)/len(avg_price_dashbtc)
         print avg_price_dashbtc
         print "AVG DASHBTC: %s" % round(DASHBTC, 5)
-        f.put("", "priceBTC", round(DASHBTC, 5))
 
     #get average BTC-USD from btce, bitstamp, bitfinex
     BtcUsd = {
@@ -138,10 +130,9 @@ def main():
         BTCUSD = reduce(lambda x, y: x+y, avg_price_btcusd)/len(avg_price_btcusd)
         print avg_price_btcusd
         print "AVG BTCUSD: %s" % round(BTCUSD, 8)
-        f.put("", "priceBTCUSD", "$%s" % round(BTCUSD, 2))
+        #f.put("", "priceBTCUSD", "$%s" % round(BTCUSD, 2))
         DASHUSD = "$%s" % round(float(BTCUSD * DASHBTC), 2)
         print "DASHUSD: %s" % DASHUSD
-        f.put("", "price", DASHUSD)
 
     #get total coins supply from Chainz
     try:
@@ -153,16 +144,18 @@ def main():
             inv_total_coins = int_total_coins[::-1]
             availablesupply = ",".join(chunks(inv_total_coins, 3))[::-1]
             print "Available supply: %s" % availablesupply
-            f.put("", "availablesupply", availablesupply)
+            #f.put("", "availablesupply", availablesupply)
         except ValueError:
             #reply is not an integer
             print "chainz reply is not valid"
     except requests.exceptions.RequestException as e:
         print e
 
-    #timestamp is given by firebase server
-    f.put("", "timestamp", {".sv": "timestamp"})
-
+    dashstats.post("stats", {
+        "availablesupply": availablesupply, "difficulty": round(getmininginfo["difficulty"], 2), "enforcement": payment_enforcement,
+        "hashrate": hashrate, "lastblock": getmininginfo["blocks"], "masternodecount": masternodecount, "price": round(float(BTCUSD * DASHBTC), 2),
+        "priceBTC": round(DASHBTC, 5), "priceBTCUSD": round(BTCUSD, 2), "timestamp": {".sv": "timestamp"}
+        })
 
 if __name__ == "__main__":
     main()
