@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>DASH</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DASH BOARD</title>
+    <meta name="DASH STATISTICS BOARD" content="Dash is a privacy-centric digital currency. Dash-Stats board shows statistics about the network and price. Masternodes, hashing power, difficulty, DASH-BTC, DASH-USD, BTC-USD. Darkcoin is now DASH.Bitcoin fork.">
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <META NAME="ROBOTS" CONTENT="INDEX, NOFOLLOW">
     <!-- Bootstrap -->
     <link href="bootstrap-3.3.5-dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
@@ -93,9 +95,31 @@
     <footer class="footer">
         <div class="container">
             <div class="muted" id="lastupdate" style="float:left"></div>
-            <div class="muted" style="float:right"><a href="https://github.com/mjsrs/dash-board" target="_blank">GitHub</a></div>
+            <div class="muted" style="float:right"><a href="#" data-toggle="modal" data-target="#about">About</a></div>
         </div>
     </footer>
+
+<div class="modal fade" id="about">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Dash board</h4>
+      </div>
+      <div class="modal-body">
+        <p>This board shows <a href="https://www.dashpay.io/" target="_blank">DASH</a> network statistics, updated once a minute.</p>
+        <p>Prices are an average value from top volume exchanges.</p>
+        <p>Charts are loaded with last 12 hours data and filled to last 24 hours data. New values are added once every 14 minutes.</p>
+        <p><a href="https://twitter.com/dashmasternode" target="_blank">dashmasternode</a> will tweet masternodes count once a day</p>
+        <p><a href="https://github.com/mjsrs/dash-board" target="_blank">GitHub</a></p>
+        <p>buy me a beer with some DASH: XtXT8gqpkkkGgtsSY8T7m58jQR3gmHeeZe</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
     <script type="text/javascript" src="firebase.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script type="text/javascript" src="jquery.sparkline/dist/jquery.sparkline.js"></script>
@@ -106,6 +130,9 @@
       var chart_resolution = 14.4*60; //14.4 minutes * 60 seconds
       var chart_length = 100; //number of values
       var chart_defaults = {height:"30px", lineColor:"#1A237E", fillColor:"#1e73be"};
+      var chart_initial_length = 34;
+      var records_to_load = 718;
+      var records_loaded = 0;
       //console.log("Charts range is "+14.4*100 / 60+"h"); //24h
 
       var difficulty_points = [];
@@ -121,7 +148,8 @@
       var url = "https://dash-stats.firebaseio.com/stats";
       var dashstats = new Firebase(url);
 
-      dashstats.orderByKey().on("child_added", function(snapshot) {
+      dashstats.orderByKey().limitToLast(records_to_load).on("child_added", function(snapshot) {
+
         _timestamp = new Date(snapshot.val().timestamp);
         var timestamp_time_since = moment(_timestamp).fromNow();
 
@@ -137,6 +165,13 @@
         $("h1[id=difficulty]").html(snapshot.val().difficulty);
         $("h1[id=availablesupply]").html(snapshot.val().availablesupply);
 
+        
+        records_loaded += 1;
+        console.log(records_loaded);
+        if(records_loaded >= records_to_load){
+          $(".mask").hide();
+          records_loaded = 0;
+        }
         var timestamp = snapshot.val().timestamp/1000;  //child added timestamp
         if((timestamp - last_timestamp) > chart_resolution){
           last_timestamp = timestamp;
@@ -167,11 +202,6 @@
         $('.priceBTCUSD_chart').sparkline(priceBTCUSD_points, chart_defaults);
         $('.masternodes_chart').sparkline(masternodes_points, chart_defaults);
 
-        //hide the mask if the charts are loaded with values
-        //when starting a new project mask will not hide before having enough values in the database
-        if(difficulty_points.length >= chart_length){
-          $(".mask").hide();
-        }
       }, function (errorObject) {
         console.log("The read failed: " + errorObject.code);
       });
