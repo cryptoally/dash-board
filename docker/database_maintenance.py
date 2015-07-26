@@ -19,11 +19,11 @@ def main():
 
     dashstats_auth = firebase.FirebaseAuthentication(appconfig['firebase']['token'], appconfig['firebase']['email'])
     dashstats = firebase.FirebaseApplication(appconfig['firebase']['url'], dashstats_auth)
-    return
     #database clean up
     #we only need 1440 records to fill a 24h chart with 100 points/ chart resolution 14,4 minutes
     #will leave 1500 records and delete the rest. this increases board start
-    records = dashstats.get("stats", None)
+    records = dashstats.get("stats", None, {'shallow': 'true'})
+    print records
     print "total records: %s" % len(records)
     nrecs = len(records) - 1500
     print "records to delete: %s" % nrecs
