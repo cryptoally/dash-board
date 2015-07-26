@@ -21,6 +21,27 @@
 </script>
   </head>
   <body>
+    <div class="modal fade" id="about">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Dash board</h4>
+      </div>
+      <div class="modal-body">
+        <p>This board shows <a href="https://www.dashpay.io/" target="_blank">DASH</a> network statistics, updated once a minute.</p>
+        <p>Prices are an average value from top volume exchanges.</p>
+        <p>Charts are loaded with last 12 hours data and filled to last 24 hours. New values are added once every 14 minutes.</p>
+        <p><a href="https://twitter.com/dashmasternode" target="_blank">dashmasternode</a> will tweet masternodes count once a day</p>
+        <p><a href="https://github.com/mjsrs/dash-board" target="_blank">GitHub</a></p>
+        <p>buy me a beer with some DASH: XtXT8gqpkkkGgtsSY8T7m58jQR3gmHeeZe</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
     <div class="mask"><div class="loading"><h1 id="loading_msg">preparing the board</h1></div></div>
         <div class="container-fluid" width="100%" height="100%">
             <div class="row">
@@ -99,27 +120,7 @@
         </div>
     </footer>
 
-<div class="modal fade" id="about">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Dash board</h4>
-      </div>
-      <div class="modal-body">
-        <p>This board shows <a href="https://www.dashpay.io/" target="_blank">DASH</a> network statistics, updated once a minute.</p>
-        <p>Prices are an average value from top volume exchanges.</p>
-        <p>Charts are loaded with last 12 hours data and filled to last 24 hours data. New values are added once every 14 minutes.</p>
-        <p><a href="https://twitter.com/dashmasternode" target="_blank">dashmasternode</a> will tweet masternodes count once a day</p>
-        <p><a href="https://github.com/mjsrs/dash-board" target="_blank">GitHub</a></p>
-        <p>buy me a beer with some DASH: XtXT8gqpkkkGgtsSY8T7m58jQR3gmHeeZe</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+
     <script type="text/javascript" src="firebase.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script type="text/javascript" src="jquery.sparkline/dist/jquery.sparkline.js"></script>
@@ -144,6 +145,18 @@
       
       var _timestamp;          //board update timestamp
       var last_timestamp = 0;  //last child added timestamp;
+
+
+      var presence = new Firebase("https://dash-stats.firebaseio.com/presence/");
+      var user = presence.push();
+
+      var connection = new Firebase("https://dash-stats.firebaseio.com/.info/connected");
+      connection.on("value", function(snap){
+        if(snap.val()){
+          user.onDisconnect().remove();
+          user.set({ startedAt: Firebase.ServerValue.TIMESTAMP });
+        }
+      });
 
       var url = "https://dash-stats.firebaseio.com/stats";
       var dashstats = new Firebase(url);

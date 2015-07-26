@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DASH BOARD - online users</title>
+    <meta name="DASH STATISTICS BOARD" content="Dash is a privacy-centric digital currency. Dash-Stats board shows statistics about the network and price. Masternodes, hashing power, difficulty, DASH-BTC, DASH-USD, BTC-USD. Darkcoin is now DASH.Bitcoin fork.">
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <META NAME="ROBOTS" CONTENT="INDEX, NOFOLLOW">
+    <!-- Bootstrap -->
+    <link href="bootstrap-3.3.5-dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link href='style.css' rel='stylesheet' type='text/css'>
+<style>
+.container {
+  height: 400px; /*Set line-height to this value*/
+  width: 400px;
+  background: #eee;
+  margin: 150px auto;
+  font: 80px/400px Helvetica, sans-serif;
+  text-align:center;
+  color:#1e73be;
+  border-radius: 50px;
+}
+</style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="users"></div>
+    </div>
+    <audio id="sound" src="sounds/sounds-1069-sorted.mp3" preload="auto" autobuffer></audio>
+    <script type="text/javascript" src="firebase.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript" src="jquery.sparkline/dist/jquery.sparkline.js"></script>
+    <script type="text/javascript" src="bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+    <script type="text/javascript">
+    var online_users = 0;
+      var presence = new Firebase("https://dash-stats.firebaseio.com/presence/");
+
+      presence.on("value", function(snap){
+        var users = snap.numChildren();
+        $("#users").html(users);
+        $("title").html('DASH BOARD - '+users+' user(s) online');
+        if(users > online_users){
+          //play sound
+          var s = document.getElementById('sound');
+          s.play();
+        }
+        online_users = users;
+      })
+
+    </script>
+  </body>
+</html>
