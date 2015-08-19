@@ -5,7 +5,7 @@ import datetime
 import requests
 import config
 
-CONFIG_FILE_PATH = "/root/firebase/config.ini"
+CONFIG_FILE_PATH = "/root/data/dash-board/docker/config.ini"
 
 
 def chunks(s, n):
@@ -52,28 +52,28 @@ def main():
 
     #run dash-cli getmininginfo
     #dashd should already been started
-    getmininginfo = subprocess.check_output(["dash-cli", "getmininginfo"])
+    getmininginfo = subprocess.check_output(["dash-cli","-datadir=/root/data","-conf=/root/data/dash.conf" ,"getmininginfo"])
     getmininginfo = json.loads(getmininginfo)
     print getmininginfo
 
     #run dash-cli masternode count
-    masternodecount = subprocess.check_output(["dash-cli", "masternode", "count"])
+    masternodecount = subprocess.check_output(["dash-cli","-datadir=/root/data", "-conf=/root/data/dash.conf" ,"masternode", "count"])
     print "masternodecount: %s" % masternodecount
 
     #update firebase values
     hashrate = round(float(getmininginfo["networkhashps"])/1000000000, 2)
 
     #run dash-cli spork show
-    spork = subprocess.check_output(["dash-cli", "spork", "show"])
+    spork = subprocess.check_output(["dash-cli","-datadir=/root/data","-conf=/root/data/dash.conf" ,"spork", "show"])
     spork = json.loads(spork)
     payment_enforcement = "On"
     unix_time_now = datetime.datetime.utcnow()
     unix_time_now = unix_time_now.strftime("%s")
     print "unix_time_now: %s" % unix_time_now
-    print "SPORK_1_MASTERNODE_PAYMENTS_ENFORCEMENT: %s" % spork["SPORK_1_MASTERNODE_PAYMENTS_ENFORCEMENT"]
+    print "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT: %s" % spork["SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT"]
 
     #check if masternode payments enforcement is enabled
-    if int(spork["SPORK_1_MASTERNODE_PAYMENTS_ENFORCEMENT"]) > int(unix_time_now):
+    if int(spork["SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT"]) > int(unix_time_now):
         payment_enforcement = "Off"
 
     #get average DASH-BTC from cryptsy, bittrex and bitfinex
