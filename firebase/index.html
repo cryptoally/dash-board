@@ -154,7 +154,7 @@
       connection.on("value", function(snap){
         if(snap.val()){
           user.onDisconnect().remove();
-          user.set({ startedAt: Firebase.ServerValue.TIMESTAMP });
+          user.set({ startedAt: Firebase.ServerValue.TIMESTAMP, lastSeen:  Firebase.ServerValue.TIMESTAMP});
         }
       });
 
@@ -163,6 +163,7 @@
 
       dashstats.orderByKey().limitToLast(records_to_load).on("child_added", function(snapshot) {
 
+        user.child('lastSeen').set(Firebase.ServerValue.TIMESTAMP);
         _timestamp = new Date(snapshot.val().timestamp);
         var timestamp_time_since = moment(_timestamp).fromNow();
 

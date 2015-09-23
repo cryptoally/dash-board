@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>DASH BOARD - online users</title>
+    <title>0 user(s) online - DASH BOARD</title>
     <meta name="DASH STATISTICS BOARD" content="Dash is a privacy-centric digital currency. Dash-Stats board shows statistics about the network and price. Masternodes, hashing power, difficulty, DASH-BTC, DASH-USD, BTC-USD. Darkcoin is now DASH.Bitcoin fork.">
     <meta http-equiv="content-type" content="text/html;charset=UTF-8">
     <META NAME="ROBOTS" CONTENT="INDEX, NOFOLLOW">
@@ -26,7 +26,8 @@
     <div class="container">
       <div id="users"></div>
     </div>
-    <audio id="sound" src="sounds/sounds-1069-sorted.mp3" preload="auto" autobuffer></audio>
+    <audio id="soundin" src="sounds/sounds-1069-sorted.mp3" preload="auto" autobuffer></audio>
+    <audio id="soundout" src="sounds/sounds-1030-electronic.mp3" preload="auto" autobuffer></audio>
     <script type="text/javascript" src="firebase.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script type="text/javascript" src="jquery.sparkline/dist/jquery.sparkline.js"></script>
@@ -39,11 +40,15 @@
       presence.on("value", function(snap){
         var users = snap.numChildren();
         $("#users").html(users);
-        $("title").html('DASH BOARD - '+users+' user(s) online');
+        $("title").html(users+' user(s) online - DASH BOARD');
         if(users > online_users){
           //play sound
-          var s = document.getElementById('sound');
+          var s = document.getElementById('soundin');
           s.play();
+        }
+        if(users < online_users){
+          var o = document.getElementById('soundout');
+          o.play();
         }
         online_users = users;
       })

@@ -5,7 +5,7 @@ import datetime
 import requests
 import config
 
-CONFIG_FILE_PATH = "/root/data/dash-board/docker/config.ini"
+CONFIG_FILE_PATH = "/root/data/dash-board/docker/mjsrsconfig.ini"
 
 
 def chunks(s, n):
@@ -47,34 +47,41 @@ def main():
             message = "*** ERROR: key \'%s\' is required" % key
             raise Exception(message)
 
-    dashstats_auth = firebase.FirebaseAuthentication(appconfig['firebase']['token'], appconfig['firebase']['email'])
-    dashstats = firebase.FirebaseApplication(appconfig['firebase']['url'], dashstats_auth)
+    a = firebase.FirebaseAuthentication(appconfig['firebase']['token'], appconfig['firebase']['email'])
+    f = firebase.FirebaseApplication(appconfig['firebase']['url'], a)
 
     #run dash-cli getmininginfo
     #dashd should already been started
-    getmininginfo = subprocess.check_output(["dash-cli","-datadir=/root/data","-conf=/root/data/dash.conf" ,"getmininginfo"])
+    getmininginfo = subprocess.check_output(["dash-cli", "-datadir=/root/data", "-conf=/root/data/dash.conf", "getmininginfo"])
     getmininginfo = json.loads(getmininginfo)
     print getmininginfo
 
     #run dash-cli masternode count
-    masternodecount = subprocess.check_output(["dash-cli","-datadir=/root/data", "-conf=/root/data/dash.conf" ,"masternode", "count"])
+    masternodecount = subprocess.check_output(["dash-cli", "-datadir=/root/data", "-conf=/root/data/dash.conf" , "masternode", "count"])
     print "masternodecount: %s" % masternodecount
 
     #update firebase values
+    f.put("", "masternodecount", masternodecount)
+    f.put("", "lastblock", getmininginfo["blocks"])
+    f.put("", "difficulty", round(getmininginfo["difficulty"], 2))
     hashrate = round(float(getmininginfo["networkhashps"])/1000000000, 2)
+    f.put("", "hashrate", hashrate)
 
     #run dash-cli spork show
-    spork = subprocess.check_output(["dash-cli","-datadir=/root/data","-conf=/root/data/dash.conf" ,"spork", "show"])
+    spork = subprocess.check_output(["dash-cli", "-datadir=/root/data", "-conf=/root/data/dash.conf","spork", "show"])
     spork = json.loads(spork)
     payment_enforcement = "On"
     unix_time_now = datetime.datetime.utcnow()
     unix_time_now = unix_time_now.strftime("%s")
     print "unix_time_now: %s" % unix_time_now
-    print "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT: %s" % spork["SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT"]
+    print "SPORK_1_MASTERNODE_PAYMENTS_ENFORCEMENT: %s" % spork["SPORK_1_MASTERNODE_PAYMENTS_ENFORCEMENT"]
 
     #check if masternode payments enforcement is enabled
-    if int(spork["SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT"]) > int(unix_time_now):
+    if int(spork["SPORK_1_MASTERNODE_PAYMENTS_ENFORCEMENT"]) > int(unix_time_now):
         payment_enforcement = "Off"
+
+    #update firebase values
+    f.put("", "enforcement", payment_enforcement)
 
     #get average DASH-BTC from cryptsy, bittrex and bitfinex
     DashBtc = {
@@ -103,6 +110,7 @@ def main():
         DASHBTC = reduce(lambda x, y: x+y, avg_price_dashbtc)/len(avg_price_dashbtc)
         print avg_price_dashbtc
         print "AVG DASHBTC: %s" % round(DASHBTC, 5)
+        f.put("", "priceBTC", round(DASHBTC, 5))
 
     #get average BTC-USD from btce, bitstamp, bitfinex
     BtcUsd = {
@@ -130,14 +138,10 @@ def main():
         BTCUSD = reduce(lambda x, y: x+y, avg_price_btcusd)/len(avg_price_btcusd)
         print avg_price_btcusd
         print "AVG BTCUSD: %s" % round(BTCUSD, 8)
-        #f.put("", "priceBTCUSD", "$%s" % round(BTCUSD, 2))
+        f.put("", "priceBTCUSD", "$%s" % round(BTCUSD, 2))
         DASHUSD = "$%s" % round(float(BTCUSD * DASHBTC), 2)
         print "DASHUSD: %s" % DASHUSD
-
-    output = {"difficulty": round(getmininginfo["difficulty"], 2), "enforcement": payment_enforcement,
-        "hashrate": hashrate, "lastblock": getmininginfo["blocks"], "masternodecount": masternodecount, "price": round(float(BTCUSD * DASHBTC), 2),
-        "priceBTC": round(DASHBTC, 5), "priceBTCUSD": round(BTCUSD, 2), "timestamp": {".sv": "timestamp"}
-        }
+        f.put("", "price", DASHUSD)
 
     #get total coins supply from Chainz
     try:
@@ -149,16 +153,15 @@ def main():
             inv_total_coins = int_total_coins[::-1]
             availablesupply = ",".join(chunks(inv_total_coins, 3))[::-1]
             print "Available supply: %s" % availablesupply
-            output.update({"availablesupply": availablesupply})
-            #f.put("", "availablesupply", availablesupply)
+            f.put("", "availablesupply", availablesupply)
         except ValueError:
             #reply is not an integer
-            print "\033[91m chainz reply is not valid \033[0m"
+            print "chainz reply is not valid"
     except requests.exceptions.RequestException as e:
         print e
 
-    dashstats.post("stats", output)
-    print "sync ended"
+    #timestamp is given by firebase server
+    f.put("", "timestamp", {".sv": "timestamp"})
 
 if __name__ == "__main__":
     main()
