@@ -172,16 +172,16 @@
         $("div[id=lastupdate]").html("this board was updated "+timestamp_time_since);
         $("h1[id=hashrate]").html(snapshot.val().hashrate);
         $("h1[id=lastblock]").html(snapshot.val().lastblock);
-        $("h1[id=price]").html("$"+snapshot.val().price);
+        $("h1[id=price]").html("$" + snapshot.val().price);
+        document.title = "DASH BOARD $" + snapshot.val().price
         $("h1[id=priceBTC]").html(snapshot.val().priceBTC);
-        $("h1[id=priceBTCUSD]").html("$"+snapshot.val().priceBTCUSD);
+        $("h1[id=priceBTCUSD]").html("$" + snapshot.val().priceBTCUSD);
         $("h1[id=enforcement]").html(snapshot.val().enforcement);
         $("h1[id=difficulty]").html(snapshot.val().difficulty);
         $("h1[id=availablesupply]").html(snapshot.val().availablesupply);
 
         
         records_loaded += 1;
-        console.log(records_loaded);
         if(records_loaded >= records_to_load){
           $(".mask").hide();
           records_loaded = 0;
