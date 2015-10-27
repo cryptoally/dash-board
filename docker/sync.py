@@ -20,7 +20,8 @@ def get_price(request, exchange, market):
         'bitfinex': ['last_price'],
         'btce': [market, 'last'],
         'bitstamp': ['last'],
-        'okcoin': ['ticker', 'last']
+        'okcoin': ['ticker', 'last'],
+        'poloniex': [market, 'last']
     }
     val = request
     if exchange in exchanges:
@@ -80,7 +81,7 @@ def main():
     DashBtc = {
         'cryptsy': {'url': 'http://pubapi2.cryptsy.com/api.php?method=singlemarketdata&marketid=155', 'fn_price': get_price, 'exchange': 'cryptsy', 'market': 'DRK'},
         'bittrex':  {'url': 'https://bittrex.com/api/v1.1/public/getticker?market=btc-dash', 'fn_price': get_price, 'exchange': 'bittrex', 'market': 'DRK'},
-        'bitfinex': {'url':  'https://api.bitfinex.com/v1/pubticker/DRKBTC', 'fn_price': get_price, 'exchange': 'bitfinex', 'market': 'DRK'}
+        'poloniex': {'url': 'https://poloniex.com/public?command=returnTicker', 'fn_price': get_price, 'exchange': 'poloniex', 'market': 'BTC_DASH'}
         }
 
     avg_price_dashbtc = []
