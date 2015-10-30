@@ -158,6 +158,11 @@ def main():
     except requests.exceptions.RequestException as e:
         print e
 
+    # get next super block
+    super_block = subprocess.check_output(["dash-cli", "-datadir=/root/data", "-conf=/root/data/dash.conf", "mnbudget", "nextblock"])
+    superblock = json.loads(super_block)
+    output['superblock'] = superblock
+
     dashstats.post("stats", output)
     print "sync ended"
 

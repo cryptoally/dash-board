@@ -97,19 +97,22 @@
                 <div class="col-md-4">
                     <div class="jumbotron">
                         <h1 id="lastblock">0</h1>
-                        <p>last block found</p>
+                        <p style="margin-bottom:0">last block found</p>
+                        <p id="superblock" style="font-size:12px">.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                    <div class="jumbotron">
                         <h1 id="availablesupply">0</h1>
-                        <p>available DASH</p>
+                        <p style="margin-bottom:0">available DASH</p>
+                        <p style="font-size:12px">.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="jumbotron">
                         <h1 id="enforcement">On</h1>
-                        <p>payment enforcement status</p>
+                        <p style="margin-bottom:0">payment enforcement status</p>
+                        <p style="font-size:12px">.</p>
                     </div> 
                 </div>
             </div>
@@ -180,6 +183,7 @@
         $("h1[id=enforcement]").html(snapshot.val().enforcement);
         $("h1[id=difficulty]").html(snapshot.val().difficulty);
         $("h1[id=availablesupply]").html(snapshot.val().availablesupply);
+        $("p[id=superblock]").html("next super block " + snapshot.val().superblock);
 
         
         records_loaded += 1;
