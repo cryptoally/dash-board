@@ -105,7 +105,7 @@
                    <div class="jumbotron">
                         <h1 id="availablesupply">0</h1>
                         <p style="margin-bottom:0">available DASH</p>
-                        <p style="font-size:12px">.</p>
+                        <p id="percentOnMasternodes" style="font-size:12px">.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -184,6 +184,10 @@
         $("h1[id=difficulty]").html(snapshot.val().difficulty);
         $("h1[id=availablesupply]").html(snapshot.val().availablesupply);
         $("p[id=superblock]").html("next super block " + snapshot.val().superblock);
+        var availablesupply = snapshot.val().availablesupply.replace(/,|_/g,'');
+        var percentOnMasternodes = 100 * (snapshot.val().masternodecount * 1000) / availablesupply;
+        $("p[id=percentOnMasternodes]").html(Math.round(percentOnMasternodes * 100)/100 + "% on masternodes");
+
 
         
         records_loaded += 1;
