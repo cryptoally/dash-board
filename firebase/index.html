@@ -186,7 +186,6 @@
         $("p[id=superblock]").html("next super block " + snapshot.val().superblock);
         var availablesupply = '' + snapshot.val().availablesupply;
         availablesupply = availablesupply.replace(/,/g,'');
-        var availablesupply = snapshot.val().availablesupply.replace(/,|_/g,'');
         var percentOnMasternodes = 100 * (snapshot.val().masternodecount * 1000) / availablesupply;
         $("p[id=percentOnMasternodes]").html(Math.round(percentOnMasternodes * 100)/100 + "% on masternodes");
 
