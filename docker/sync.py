@@ -5,7 +5,9 @@ import datetime
 import requests
 import config
 
-CONFIG_FILE_PATH = "/root/data/dash-board/docker/config.ini"
+CONFIG_FILE_PATH = "config.ini"
+DATA_PATH = "/opt/data"
+CONF_PATH = "/opt/data/dash.conf"
 
 
 def chunks(s, n):
@@ -21,7 +23,9 @@ def get_price(request, exchange, market):
         'btce': [market, 'last'],
         'bitstamp': ['last'],
         'okcoin': ['ticker', 'last'],
-        'poloniex': [market, 'last']
+        'poloniex': [market, 'last'],
+        'bter': ['last'],
+        'livecoin': ['last']
     }
     val = request
     if exchange in exchanges:
@@ -51,21 +55,21 @@ def main():
     dashstats_auth = firebase.FirebaseAuthentication(appconfig['firebase']['token'], appconfig['firebase']['email'])
     dashstats = firebase.FirebaseApplication(appconfig['firebase']['url'], dashstats_auth)
 
-    #run dash-cli getmininginfo
-    #dashd should already been started
-    getmininginfo = subprocess.check_output(["dash-cli","-datadir=/root/data","-conf=/root/data/dash.conf" ,"getmininginfo"])
+    # run dash-cli getmininginfo
+    # dashd should already been started
+    getmininginfo = subprocess.check_output(["dash-cli", "-datadir=%s" % DATA_PATH, "-conf=%s" % CONF_PATH, "getmininginfo"])
     getmininginfo = json.loads(getmininginfo)
     print getmininginfo
 
-    #run dash-cli masternode count
-    masternodecount = subprocess.check_output(["dash-cli","-datadir=/root/data", "-conf=/root/data/dash.conf" ,"masternode", "count"])
+    # run dash-cli masternode count
+    masternodecount = subprocess.check_output(["dash-cli", "-datadir=%s" % DATA_PATH, "-conf=%s" % CONF_PATH, "masternode", "count"])
     print "masternodecount: %s" % masternodecount
 
-    #update firebase values
+    # update firebase values
     hashrate = round(float(getmininginfo["networkhashps"])/1000000000, 2)
 
-    #run dash-cli spork show
-    spork = subprocess.check_output(["dash-cli","-datadir=/root/data","-conf=/root/data/dash.conf" ,"spork", "show"])
+    # run dash-cli spork show
+    spork = subprocess.check_output(["dash-cli", "-datadir=%s" % DATA_PATH, "-conf=%s" % CONF_PATH, "spork", "show"])
     spork = json.loads(spork)
     payment_enforcement = "On"
     unix_time_now = datetime.datetime.utcnow()
@@ -73,26 +77,29 @@ def main():
     print "unix_time_now: %s" % unix_time_now
     print "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT: %s" % spork["SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT"]
 
-    #check if masternode payments enforcement is enabled
+    # check if masternode payments enforcement is enabled
     if int(spork["SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT"]) > int(unix_time_now):
         payment_enforcement = "Off"
 
-    #get average DASH-BTC from cryptsy, bittrex and bitfinex
+    # get average DASH-BTC from cryptsy, bittrex and bitfinex
     DashBtc = {
         'cryptsy': {'url': 'http://pubapi2.cryptsy.com/api.php?method=singlemarketdata&marketid=155', 'fn_price': get_price, 'exchange': 'cryptsy', 'market': 'DRK'},
         'bittrex':  {'url': 'https://bittrex.com/api/v1.1/public/getticker?market=btc-dash', 'fn_price': get_price, 'exchange': 'bittrex', 'market': 'DRK'},
-        'poloniex': {'url': 'https://poloniex.com/public?command=returnTicker', 'fn_price': get_price, 'exchange': 'poloniex', 'market': 'BTC_DASH'}
+        'poloniex': {'url': 'https://poloniex.com/public?command=returnTicker', 'fn_price': get_price, 'exchange': 'poloniex', 'market': 'BTC_DASH'},
+        'bter': {'url': 'http://data.bter.com/api/1/ticker/dash_btc', 'fn_price': get_price, 'exchange': 'bter', 'market': 'BTC_DASH'},
+        'livecoin': {'url': 'https://api.livecoin.net/exchange/ticker?currencyPair=DASH/BTC', 'fn_price': get_price, 'exchange': 'livecoin', 'market': 'BTC_DASH'}
         }
 
     avg_price_dashbtc = []
     for key, value in DashBtc.iteritems():
         try:
-            r = requests.get(value['url'])
+            r = requests.get(value['url'], verify=False, timeout=5)
             try:
                 output = json.loads(r.text)
                 price = value['fn_price'](output, value['exchange'], value['market'])
                 if price is not None:
                     avg_price_dashbtc.append(price)
+                    print "Market:%s/%s ; Price: %s" % (value['exchange'], value['market'], price)
             except Exception as e:
                 print e
                 print "Could not get price from %s:%s" % (value['exchange'], value['market'])
@@ -105,7 +112,7 @@ def main():
         print avg_price_dashbtc
         print "AVG DASHBTC: %s" % round(DASHBTC, 5)
 
-    #get average BTC-USD from btce, bitstamp, bitfinex
+    # get average BTC-USD from btce, bitstamp, bitfinex
     BtcUsd = {
         'btce': {'url': 'https://btc-e.com/api/3/ticker/btc_usd', 'fn_price': get_price, 'exchange': 'btce', 'market': 'btc_usd'},
         'bitstamp': {'url': 'https://www.bitstamp.net/api/ticker/', 'fn_price': get_price, 'exchange': 'bitstamp', 'market': 'BTCUSD'},
@@ -115,12 +122,13 @@ def main():
     avg_price_btcusd = []
     for key, value in BtcUsd.iteritems():
         try:
-            r = requests.get(value['url'])
+            r = requests.get(value['url'], verify=False, timeout=5)
             try:
                 output = json.loads(r.text)
                 price = value['fn_price'](output, value['exchange'], value['market'])
                 if price is not None:
                     avg_price_btcusd.append(price)
+                    print "Market:%s/%s ; Price: %s" % (value['exchange'], value['market'], price)
             except Exception as e:
                 print e
                 print "Could not get price from %s:%s" % (value['exchange'], value['market'])
@@ -140,26 +148,26 @@ def main():
         "priceBTC": round(DASHBTC, 5), "priceBTCUSD": round(BTCUSD, 2), "timestamp": {".sv": "timestamp"}
         }
 
-    #get total coins supply from Chainz
+    # get total coins supply from Chainz
     try:
         r = requests.get("http://chainz.cryptoid.info/dash/api.dws?q=totalcoins")
         int_total_coins = r.text.split(".")[0]
         try:
-            #validate request
+            # validate request
             int(int_total_coins)
             inv_total_coins = int_total_coins[::-1]
             availablesupply = ",".join(chunks(inv_total_coins, 3))[::-1]
             print "Available supply: %s" % availablesupply
             output.update({"availablesupply": availablesupply})
-            #f.put("", "availablesupply", availablesupply)
+            # f.put("", "availablesupply", availablesupply)
         except ValueError:
-            #reply is not an integer
+            # reply is not an integer
             print "\033[91m chainz reply is not valid \033[0m"
     except requests.exceptions.RequestException as e:
         print e
 
     # get next super block
-    super_block = subprocess.check_output(["dash-cli", "-datadir=/root/data", "-conf=/root/data/dash.conf", "mnbudget", "nextblock"])
+    super_block = subprocess.check_output(["dash-cli", "-datadir=%s" % DATA_PATH, "-conf=%s" % CONF_PATH, "mnbudget", "nextblock"])
     superblock = json.loads(super_block)
     output['superblock'] = superblock
 
