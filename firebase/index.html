@@ -177,7 +177,7 @@
         $("h1[id=hashrate]").html(snapshot.val().hashrate);
         $("h1[id=lastblock]").html(snapshot.val().lastblock);
         $("h1[id=price]").html("$" + snapshot.val().price);
-        document.title = "DASH BOARD $" + snapshot.val().price
+        document.title = "$" + snapshot.val().price + "  DASH BOARD";
         $("h1[id=priceBTC]").html(snapshot.val().priceBTC);
         $("h1[id=priceBTCUSD]").html("$" + snapshot.val().priceBTCUSD);
         $("h1[id=enforcement]").html(snapshot.val().enforcement);
