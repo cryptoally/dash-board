@@ -83,7 +83,7 @@ def main():
 
     # get average DASH-BTC from cryptsy, bittrex and bitfinex
     DashBtc = {
-        'cryptsy': {'url': 'http://pubapi2.cryptsy.com/api.php?method=singlemarketdata&marketid=155', 'fn_price': get_price, 'exchange': 'cryptsy', 'market': 'DRK'},
+        # 'cryptsy': {'url': 'http://pubapi2.cryptsy.com/api.php?method=singlemarketdata&marketid=155', 'fn_price': get_price, 'exchange': 'cryptsy', 'market': 'DRK'},
         'bittrex':  {'url': 'https://bittrex.com/api/v1.1/public/getticker?market=btc-dash', 'fn_price': get_price, 'exchange': 'bittrex', 'market': 'DRK'},
         'poloniex': {'url': 'https://poloniex.com/public?command=returnTicker', 'fn_price': get_price, 'exchange': 'poloniex', 'market': 'BTC_DASH'},
         'bter': {'url': 'http://data.bter.com/api/1/ticker/dash_btc', 'fn_price': get_price, 'exchange': 'bter', 'market': 'BTC_DASH'},
