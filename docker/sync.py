@@ -171,6 +171,18 @@ def main():
     superblock = json.loads(super_block)
     output['superblock'] = superblock
 
+    # get budget and proposals info from dashwhale api
+    try:
+        r = requests("https://www.dashwhale.org/api/v1/budget")
+        response = r.json()
+        output['n_proposals'] = len(response['proposals'])
+        output['budget_total_amount'] = response['budget']['total_amount']
+        output['budget_alloted_amount'] = response['budget']['alloted_amount']
+        output['budget_payment_date'] = response['budget']['payment_date']
+        output['budget_payment_date_human'] = response['budget']['payment_date_human']
+    except requests.exceptions.RequestException as e:
+        print e
+
     dashstats.post("stats", output)
     print "sync ended"
 
