@@ -5,7 +5,7 @@ import datetime
 import requests
 import config
 
-CONFIG_FILE_PATH = "config.ini"
+CONFIG_FILE_PATH = "/opt/data/dash-board/docker/config.ini"
 DATA_PATH = "/opt/data"
 CONF_PATH = "/opt/data/dash.conf"
 
