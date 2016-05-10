@@ -25,7 +25,9 @@ def get_price(request, exchange, market):
         'okcoin': ['ticker', 'last'],
         'poloniex': [market, 'last'],
         'bter': ['last'],
-        'livecoin': ['last']
+        'livecoin': ['last'],
+        'btce': ['ticker', 'last'],
+        'exmo': [market, 'last_trade']
     }
     val = request
     if exchange in exchanges:
@@ -87,7 +89,9 @@ def main():
         'bittrex':  {'url': 'https://bittrex.com/api/v1.1/public/getticker?market=btc-dash', 'fn_price': get_price, 'exchange': 'bittrex', 'market': 'DRK'},
         'poloniex': {'url': 'https://poloniex.com/public?command=returnTicker', 'fn_price': get_price, 'exchange': 'poloniex', 'market': 'BTC_DASH'},
         'bter': {'url': 'http://data.bter.com/api/1/ticker/dash_btc', 'fn_price': get_price, 'exchange': 'bter', 'market': 'BTC_DASH'},
-        'livecoin': {'url': 'https://api.livecoin.net/exchange/ticker?currencyPair=DASH/BTC', 'fn_price': get_price, 'exchange': 'livecoin', 'market': 'BTC_DASH'}
+        'livecoin': {'url': 'https://api.livecoin.net/exchange/ticker?currencyPair=DASH/BTC', 'fn_price': get_price, 'exchange': 'livecoin', 'market': 'BTC_DASH'},
+        'btce': {'url': 'https://btc-e.com/api/2/dsh_btc/ticker', 'fn_price': get_price, 'exchange': 'btce', 'market': 'dsh_btc'},
+        'exmo': {'url': 'https://api.exmo.com/v1/ticker/', 'fn_price': get_price, 'exchange': 'exmo', 'market': 'DASH_BTC'}
         }
 
     avg_price_dashbtc = []
