@@ -4,6 +4,7 @@ import json
 import datetime
 import requests
 import config
+from calcs import masternodes
 
 CONFIG_FILE_PATH = "/opt/data/dash-board/docker/config.ini"
 DATA_PATH = "/opt/data"
@@ -186,6 +187,11 @@ def main():
         output['budget_payment_date_human'] = response['budget']['payment_date_human']
     except requests.exceptions.RequestException as e:
         print e
+
+    # masternode daily payment
+    masternode_calcs = masternodes(int(output["masternodecount"]))
+    output["masternodeDailyPayment"] = masternode_calcs.dailyPayment()
+    print "Masternodes daily payment: %s" % output["masternodeDailyPayment"]
 
     dashstats.post("stats", output)
     print "sync ended"
