@@ -122,6 +122,13 @@
                         <p id="budget_message" style="font-size:12px">.</p>
                     </div> 
                 </div>
+                <div class="col-md-4">
+                    <div class="jumbotron">
+                        <h1 id="masternodeDailyPayment">0</h1>
+                        <p style="margin-bottom:0">Masternode daily payment</p>
+                        <p id="" style="font-size:12px">.</p>
+                    </div> 
+                </div>
             </div>
         </div>
     <footer class="footer">
@@ -200,7 +207,7 @@
         $("h1[id=alloted_amount]").html(snapshot.val().budget_alloted_amount);
         var percentAllotedBuget = (snapshot.val().budget_alloted_amount * 100) / snapshot.val().budget_total_amount;
         $("p[id=budget_message]").html(Math.round(percentAllotedBuget * 100)/100 + "% of total budget allocated");
-
+        $("h1[id=masternodeDailyPayment]").html("$" + Math.round(snapshot.val().masternodeDailyPayment * 100) / 100);
 
 
 
