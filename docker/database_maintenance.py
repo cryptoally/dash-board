@@ -1,7 +1,7 @@
 from firebase import firebase
 import config
 
-CONFIG_FILE_PATH = "/root/data/dash-board/docker/config.ini"
+CONFIG_FILE_PATH = "/root/data/pura-board/docker/config.ini"
 
 
 def main():

@@ -5,7 +5,7 @@ import datetime
 import requests
 import config
 
-CONFIG_FILE_PATH = "/root/data/dash-board/docker/mjsrsconfig.ini"
+CONFIG_FILE_PATH = "/root/data/pura-board/docker/mjsrsconfig.ini"
 
 
 def chunks(s, n):
@@ -52,7 +52,7 @@ def main():
 
     #run dash-cli getmininginfo
     #dashd should already been started
-    getmininginfo = subprocess.check_output(["dash-cli", "-datadir=/root/data", "-conf=/root/data/dash.conf", "getmininginfo"])
+    getmininginfo = subprocess.check_output(["pura-cli", "-datadir=/root/data", "-conf=/root/data/dash.conf", "getmininginfo"])
     getmininginfo = json.loads(getmininginfo)
     print getmininginfo
 

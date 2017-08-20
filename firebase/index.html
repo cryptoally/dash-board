@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>DASH BOARD</title>
-    <meta name="DASH STATISTICS BOARD" content="Dash is a privacy-centric digital currency. Dash-Stats board shows statistics about the network and price. Masternodes, hashing power, difficulty, DASH-BTC, DASH-USD, BTC-USD. Darkcoin is now DASH.Bitcoin fork.">
+    <title>PURA BOARD</title>
+    <meta name="PURA STATISTICS BOARD" content="Pura is a privacy-centric digital currency. Pura-Stats board shows statistics about the network and price. Masternodes, hashing power, difficulty, PURA-BTC, PURA-USD, BTC-USD.">
     <meta http-equiv="content-type" content="text/html;charset=UTF-8">
     <META NAME="ROBOTS" CONTENT="INDEX, NOFOLLOW">
     <!-- Bootstrap -->
@@ -26,16 +26,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Dash board</h4>
+        <h4 class="modal-title">Pura board</h4>
       </div>
       <div class="modal-body">
-        <p>This board shows <a href="https://www.dash.org/" target="_blank">DASH</a> network statistics, updated once a minute.</p>
+        <p>This board shows <a href="http://www.pura.one/" target="_blank">PURA</a> network statistics, updated once a minute.</p>
         <p>Prices are an average value from top volume exchanges.</p>
         <p>Charts are loaded with last 12 hours data and filled to last 24 hours. New values are added once every 14 minutes.</p>
-        <p><a href="https://twitter.com/dashmasternode" target="_blank">dashmasternode</a> will tweet masternodes count once a day</p>
-        <p><a href="https://github.com/mjsrs/dash-board" target="_blank">GitHub</a></p>
-        <p>buy me a beer: XtXT8gqpkkkGgtsSY8T7m58jQR3gmHeeZe</p>
-        <p><a href="https://dash-proposals.firebaseapp.com/"  target="_blank">dash-proposals</a></p>
+        <p><a href="https://github.com/cryptoally/pura-board" target="_blank">GitHub</a></p>
+        <p>buy me a beer: PCVdyrku6yMBaa4DXJvfVUrSfLckYtKx1y</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -64,7 +62,7 @@
                     <div class="jumbotron">
                         <h1 id="difficulty">0</h1>
                         <span class="difficulty_chart chart"></span>
-                        <p>DASH difficulty </p>
+                        <p>PURA difficulty </p>
                         
                     </div>
                 </div>
@@ -74,7 +72,7 @@
                     <div class="jumbotron">
                         <h1 id="priceBTC">0</h1>
                         <span class="priceBTC_chart chart"></span>
-                        <p>BTC for one DASH </p>
+                        <p>BTC for one PURA </p>
                         
                     </div>
                 </div>
@@ -82,7 +80,7 @@
                     <div class="jumbotron">
                         <h1 id="price">$0</h1>
                         <span class="price_chart chart"></span>
-                        <p>for one DASH</p>
+                        <p>for one PURA</p>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -104,7 +102,7 @@
                 <div class="col-md-4">
                    <div class="jumbotron">
                         <h1 id="availablesupply">0</h1>
-                        <p style="margin-bottom:0">available DASH</p>
+                        <p style="margin-bottom:0">available PURA</p>
                         <p id="percentOnMasternodes" style="font-size:12px">.</p>
                     </div>
                 </div>
@@ -165,10 +163,10 @@
       var last_timestamp = 0;  //last child added timestamp;
 
 
-      var presence = new Firebase("https://dash-stats.firebaseio.com/presence/");
+      var presence = new Firebase("https://pura-stats.firebaseio.com/presence/");
       var user = presence.push();
 
-      var connection = new Firebase("https://dash-stats.firebaseio.com/.info/connected");
+      var connection = new Firebase("https://pura-stats.firebaseio.com/.info/connected");
       connection.on("value", function(snap){
         if(snap.val()){
           user.onDisconnect().remove();
@@ -176,7 +174,7 @@
         }
       });
 
-      var url = "https://dash-stats.firebaseio.com/stats";
+      var url = "https://pura-stats.firebaseio.com/stats";
       var dashstats = new Firebase(url);
 
       dashstats.orderByKey().limitToLast(records_to_load).on("child_added", function(snapshot) {
