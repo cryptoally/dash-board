@@ -1,13 +1,13 @@
-# dash-board
+# pura-board
 
 ## Overview
-dash-board is a board for monitoring DASH digital currency.  
+pura-board is a board for monitoring PURA digital currency.  
 The board shows network information and prices.
 Prices are average values calculated from several exchanges.  
 Refer to the code for more information.
 
-## What is DASH?
-[Dash](https://github.com/dashpay/dash) is an experimental new digital currency that enables anonymous, instant payments to anyone, anywhere in the world.
+## What is PURA?
+[Pura](https://github.com/PURAcoin/PURA) is an experimental new digital currency that enables anonymous, instant payments to anyone, anywhere in the world.
 
 
 ## Installing
@@ -16,13 +16,13 @@ Refer to the code for more information.
   * Change "databaseUrl" in index.html.  
   * Deploy firebase folder contents to firebase servers.
 
-  * Deploy docker folder to a machine running a DASH node.
+  * Deploy docker folder to a machine running a PURA node.
   * Fill init/config.ini with your information and copy it to the root directory.
   * Call sync.py periodically.
 
 ## Demo
 
-[Demo](https://dash-stats.firebaseapp.com)
+[Demo](https://pura-stats.firebaseapp.com)
 
 DASH: XtXT8gqpkkkGgtsSY8T7m58jQR3gmHeeZe
 ...
